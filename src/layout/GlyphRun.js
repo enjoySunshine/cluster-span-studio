@@ -1,5 +1,6 @@
 import BBox from '../glyph/BBox';
 import * as Script from '../layout/Script';
+import { computeClusters } from './ClusterSpan';
 
 /**
  * Represents a run of Glyph and GlyphPosition objects.
@@ -61,6 +62,23 @@ export default class GlyphRun {
     } else if (typeof features === 'object') {
       this.features = features;
     }
+  }
+
+  /**
+   * The cluster spans of this run: the glyph ranges that cursors, line
+   * breaking and preview rendering treat as indivisible units. Computed once
+   * on first access from the run's own glyphs and positions, so preview and
+   * measurement always share the same cluster boundaries.
+   * @type {ClusterSpan[]}
+   */
+  get clusters() {
+    if (this._clusters == null) {
+      this._clusters = this.positions
+        ? computeClusters(this.glyphs, this.positions, this.glyphInfos)
+        : [];
+    }
+
+    return this._clusters;
   }
 
   /**

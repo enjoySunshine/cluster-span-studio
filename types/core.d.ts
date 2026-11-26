@@ -156,6 +156,14 @@ export interface GlyphRun {
   positions: GlyphPosition[];
 
   /**
+   * The cluster spans of this run: the glyph ranges that cursors, line
+   * breaking and preview rendering treat as indivisible units. Complex
+   * script shapers keep half-forms and reordered pre-base marks in their
+   * base's cluster; other text groups a base with its combining marks.
+   */
+  clusters: ClusterSpan[];
+
+  /**
    * The script that was requested for shaping. This was either passed in or detected automatically.
    */
   script: string;
@@ -192,6 +200,24 @@ export interface GlyphRun {
    * The bounding box containing all glyphs in the run.
    */
   bbox: BBOX;
+}
+
+/**
+ * A span of consecutive glyphs in a GlyphRun that forms a single cluster.
+ * The span references the run's own `glyphs`/`positions` arrays by index.
+ */
+export interface ClusterSpan {
+  /** Index of the cluster's first glyph in the run. */
+  start: number;
+
+  /** Index one past the cluster's last glyph in the run. */
+  end: number;
+
+  /** Pen x position at the start of the cluster. */
+  x: number;
+
+  /** Total horizontal advance of the cluster. */
+  advance: number;
 }
 
 /**
